@@ -22,13 +22,7 @@ It's recommended, but not necessarily, to `disable the optimization under C/C++ 
  - Supports C++20 and higher versions.
 
 ## How it shows
-virtual implementation with [crycall](https://github.com/Android1337/crycall):\
-![](https://i.imgur.com/tHC146a.png)\
-inline implementation:\
-![](https://i.imgur.com/TWWx9ch.png)\
-![](https://i.imgur.com/tuZ2X5m.png)\
-encrypted string:\
-![](https://i.imgur.com/6syVgsK.png)\
+[Look here](https://imgur.com/a/acamGoW)
 
 ## Repository Structure
 - **`include/`**: Contains the `crystr.hpp` header file providing the compile-time string encryption mechanism.
