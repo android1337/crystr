@@ -26,7 +26,7 @@
 #define CRYSTR_HPP
 #include <bit> // std::bit_cast
 
-#define USE_INLINE_FUNCTIONS 1 // you can either use virtual or __forceinline
+#define USE_INLINE_FUNCTIONS 0 // you can either use virtual or __forceinline
 
 #if USE_INLINE_FUNCTIONS == 1
 #define CRYSTR_TYPE __forceinline
