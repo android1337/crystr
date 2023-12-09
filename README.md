@@ -22,7 +22,7 @@ When using the virtual functions option it `needs RTTI OFF (Run-Time Type Inform
  - Supports C++20 and higher versions.
 
 ## How it shows
-[Look here](https://imgur.com/a/acamGoW)
+[Look here](https://imgur.com/a/acamGoW)\
 How it shows using [inline functions option](https://crystr-inline.tiiny.site)
 
 ## Repository Structure
