@@ -32,10 +32,9 @@
 #define CRYSTR_TYPE __forceinline
 #else
 #define CRYSTR_TYPE virtual
-#endif
-
 #ifdef _CPPRTTI
 #error("Please disable Run-Time Type Information under C/C++ -> Language (/GR-)")
+#endif
 #endif
 
 constexpr unsigned long long const_hash(const char* input) {
