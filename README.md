@@ -23,6 +23,7 @@ When using the virtual functions option it `needs RTTI OFF (Run-Time Type Inform
 
 ## How it shows
 [Look here](https://imgur.com/a/acamGoW)
+How it shows using [inline functions option](https://crystr-inline.tiiny.site)
 
 ## Repository Structure
 - **`include/`**: Contains the `crystr.hpp` header file providing the compile-time string encryption mechanism.
