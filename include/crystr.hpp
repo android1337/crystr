@@ -26,7 +26,7 @@
 #define CRYSTR_HPP
 #include <bit> // std::bit_cast
 
-#define USE_INLINE_FUNCTIONS 0 // you can either use virtual or __forceinline
+#define USE_INLINE_FUNCTIONS 1 // you can either use virtual or __forceinline
 
 #if USE_INLINE_FUNCTIONS == 1
 #define CRYSTR_TYPE __forceinline
@@ -43,7 +43,19 @@ constexpr unsigned long long const_hash(const char* input) {
 
 #define crystr(str) []() { \
 			constexpr static auto const_str = crys::cryStr \
-				<const_hash(__DATE__ __TIME__) + __COUNTER__, sizeof(str) / sizeof(str[0]), std::remove_const_t<std::remove_reference_t<decltype(str[0])>>>((std::remove_const_t<std::remove_reference_t<decltype(str[0])>>*)str); \
+				<const_hash(__DATE__ __TIME__) + __COUNTER__ * __COUNTER__, sizeof(str) / sizeof(str[0]), std::remove_const_t<std::remove_reference_t<decltype(str[0])>>>((std::remove_const_t<std::remove_reference_t<decltype(str[0])>>*)str); \
+					return const_str; }()
+
+#define crynum(num) []() { \
+			constexpr thread_local auto val = num; \
+			constexpr static auto const_str = crys::cryNum \
+				<const_hash(__DATE__ __TIME__) + __COUNTER__ * __COUNTER__, decltype(val)>(std::bit_cast<unsigned int, decltype(val)>(num)); \
+					return const_str; }()
+
+#define crynum_long(num) []() { \
+			constexpr thread_local auto val = num; \
+			constexpr static auto const_str = crys::cryNum \
+				<const_hash(__DATE__ __TIME__) + __COUNTER__ * __COUNTER__, decltype(val)>(std::bit_cast<unsigned long long, decltype(val)>(num)); \
 					return const_str; }()
 
 namespace crys
@@ -179,6 +191,102 @@ namespace crys
 		}
 
 		T data[data_size] = {};
+	};
+
+	template <unsigned long long uniqueid, typename T>
+	class cryNum
+	{
+	public:
+		__forceinline constexpr cryNum(unsigned long long value)
+		{
+			auto v = uniqueid * double((3.1415926535897932f / (180.f)) / 2.f);
+			auto y = v - (2.0f * 3.1415926535897932f) * double((0.31830988618f * 0.5f) * v + 0.5f);
+			auto w = double(0);
+
+			if (y > 3.1415926535897932f / 2)
+			{
+				y = 3.1415926535897932f - y;
+				w = (-1.f * ((((-2.6051615e-07f * (y * y) + 2.4760495e-05f) * (y * y) - 0.0013888378f) * (y * y) + 0.041666638f) * (y * y) - 0.5f) * (y * y) + 1.0f);
+			}
+			else if (y < (3.1415926535897932f / 2) * -1)
+			{
+				y = -3.1415926535897932f - y;
+				w = (-1.f * ((((-2.6051615e-07f * (y * y) + 2.4760495e-05f) * (y * y) - 0.0013888378f) * (y * y) + 0.041666638f) * (y * y) - 0.5f) * (y * y) + 1.0f);
+			}
+			else
+				w = (1.f * ((((-2.6051615e-07f * (y * y) + 2.4760495e-05f) * (y * y) - 0.0013888378f) * (y * y) + 0.041666638f) * (y * y) - 0.5f) * (y * y) + 1.0f);
+
+			auto z = (((((-2.3889859e-08f * (y * y) + 2.7525562e-06f) * (y * y) - 0.00019840874f) * (y * y) + 0.0083333310f) * (y * y) - 0.16666667f) * (y * y) + 1.0f);
+			data = value ^ std::bit_cast<unsigned long long>(z * y + w);
+		}
+
+		__forceinline T decrypt()
+		{
+#if defined(CRYCALL_HPP) && USE_INLINE_FUNCTIONS == 0
+			thread_local auto ret = crycall_virtual(unsigned long long, this, 0x2);
+#else
+			thread_local auto ret = xor_decrypt();
+#endif
+			return *(T*)&ret;
+		}
+
+		__forceinline void clear()
+		{
+			data = 0;
+		}
+
+	private:
+		CRYSTR_TYPE unsigned long long get_xor_key()
+		{
+			thread_local auto d = double((3.1415926535897932f / (180.f)) / 2.f);
+			thread_local auto v = uniqueid * d;
+			thread_local auto q = double((0.31830988618f * 0.5f) * v + 0.5f);
+			thread_local auto y = v - (2.0f * 3.1415926535897932f) * q;
+
+			if (y > 3.1415926535897932f / 2)
+			{
+				thread_local auto ny = 3.1415926535897932f - y;
+				thread_local auto z = (((((-2.3889859e-08f * (ny * ny) + 2.7525562e-06f) * (ny * ny) - 0.00019840874f) * (ny * ny) + 0.0083333310f) * (ny * ny) - 0.16666667f) * (ny * ny) + 1.0f);
+				thread_local auto w = (-1.f * ((((-2.6051615e-07f * (ny * ny) + 2.4760495e-05f) * (ny * ny) - 0.0013888378f) * (ny * ny) + 0.041666638f) * (ny * ny) - 0.5f) * (ny * ny) + 1.0f);
+				thread_local auto ret = z * ny + w;
+				return std::bit_cast<unsigned long long>(ret);
+			}
+			else if (y < (3.1415926535897932f / 2) * -1)
+			{
+				thread_local auto ny = -3.1415926535897932f - y;
+				thread_local auto z = (((((-2.3889859e-08f * (ny * ny) + 2.7525562e-06f) * (ny * ny) - 0.00019840874f) * (ny * ny) + 0.0083333310f) * (ny * ny) - 0.16666667f) * (ny * ny) + 1.0f);
+				thread_local auto w = (-1.f * ((((-2.6051615e-07f * (ny * ny) + 2.4760495e-05f) * (ny * ny) - 0.0013888378f) * (ny * ny) + 0.041666638f) * (ny * ny) - 0.5f) * (ny * ny) + 1.0f);
+				thread_local auto ret = z * ny + w;
+				return std::bit_cast<unsigned long long>(ret);
+			}
+
+			thread_local auto z = (((((-2.3889859e-08f * (y * y) + 2.7525562e-06f) * (y * y) - 0.00019840874f) * (y * y) + 0.0083333310f) * (y * y) - 0.16666667f) * (y * y) + 1.0f);
+			thread_local auto w = (1.f * ((((-2.6051615e-07f * (y * y) + 2.4760495e-05f) * (y * y) - 0.0013888378f) * (y * y) + 0.041666638f) * (y * y) - 0.5f) * (y * y) + 1.0f);
+			thread_local auto ret = z * y + w;
+			return std::bit_cast<unsigned long long>(ret);
+		}
+
+		CRYSTR_TYPE void xor_byte(unsigned long long* out, unsigned long long data)
+		{
+#if defined(CRYCALL_HPP) && USE_INLINE_FUNCTIONS == 0
+			*out = data ^ crycall_virtual(unsigned long long, this, 0x0);
+#else
+			*out = data ^ get_xor_key();
+#endif
+		}
+
+		CRYSTR_TYPE unsigned long long xor_decrypt()
+		{
+			unsigned long long ret{};
+#if defined(CRYCALL_HPP) && USE_INLINE_FUNCTIONS == 0
+			crycall_virtual(void, this, 0x1, &ret, data);
+#else
+			xor_byte(&ret, data);
+#endif
+			return ret;
+		}
+
+		unsigned long long data = {};
 	};
 }
 
