@@ -83,7 +83,7 @@ namespace crys
 #if defined(CRYCALL_HPP) && USE_INLINE_FUNCTIONS == 0
 			crycall_virtual(void, this, 0x2);
 #else
-			xor_decrypt();
+			xor_encrypt();
 #endif
 		}
 
