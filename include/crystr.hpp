@@ -37,25 +37,26 @@
 #endif
 #endif
 
-constexpr unsigned long long const_hash(const char* input) {
-	return *input ? static_cast<unsigned long long>(*input) + 33 * const_hash(input + 1) : 5381;
+constexpr unsigned long long const_hash(const char* input, unsigned long long value = 0) {
+	return *input ? static_cast<unsigned long long>(*input) + 33 * const_hash(input + 1, value)
+		: (5381 + 33 * value);
 }
 
 #define crystr(str) []() { \
 			constexpr static auto const_str = crys::cryStr \
-				<const_hash(__DATE__ __TIME__) + __COUNTER__ * __COUNTER__, sizeof(str) / sizeof(str[0]), std::remove_const_t<std::remove_reference_t<decltype(str[0])>>>((std::remove_const_t<std::remove_reference_t<decltype(str[0])>>*)str); \
+				<const_hash(__DATE__ __TIME__, __COUNTER__), sizeof(str) / sizeof(str[0]), std::remove_const_t<std::remove_reference_t<decltype(str[0])>>>((std::remove_const_t<std::remove_reference_t<decltype(str[0])>>*)str); \
 					return const_str; }()
 
 #define crynum(num) []() { \
 			constexpr thread_local auto val = num; \
 			constexpr static auto const_str = crys::cryNum \
-				<const_hash(__DATE__ __TIME__) + __COUNTER__ * __COUNTER__, decltype(val)>(std::bit_cast<unsigned int, decltype(val)>(num)); \
+				<const_hash(__DATE__ __TIME__, __COUNTER__), decltype(val)>(std::bit_cast<unsigned int, decltype(val)>(num)); \
 					return const_str; }()
 
 #define crynum_long(num) []() { \
 			constexpr thread_local auto val = num; \
 			constexpr static auto const_str = crys::cryNum \
-				<const_hash(__DATE__ __TIME__) + __COUNTER__ * __COUNTER__, decltype(val)>(std::bit_cast<unsigned long long, decltype(val)>(num)); \
+				<const_hash(__DATE__ __TIME__, __COUNTER__), decltype(val)>(std::bit_cast<unsigned long long, decltype(val)>(num)); \
 					return const_str; }()
 
 namespace crys
